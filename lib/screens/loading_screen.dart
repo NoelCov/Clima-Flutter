@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:clima/services/location.dart';
-import 'package:http/http.dart' as http;
+import 'location_screen.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:clima/services/weather.dart';
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -8,40 +9,42 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
+
   @override
   void initState() {
     super.initState();
     getLocation();
   }
 
-  @override
-  void deactivate() {
-    super.deactivate();
-  }
-
   void getLocation() async {
-    Location location = Location();
-    await location.getCurrentLocation();
-    double longitude = location.longitude;
-    double latitude = location.latitude;
-
-    print('This is the longitude: $longitude');
-    print('This is the latitude: $latitude');
-  }
-
-  void getData() async {
-    http.Response response =
-        await http.get(Uri.https('https://API.com', '/path to what we want'));
-
-    if (response.statusCode == 200) {
-      String data = response.body;
-    } else {
-      print(response.statusCode);
-    }
+    WeatherModel weatherModel = WeatherModel();
+    var weatherData = await weatherModel.getLocationWeather();
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => LocationScreen(locationWeather: weatherData,)));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Loading...',
+            style: TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(
+            height: 20.0,
+          ),
+          SpinKitWave(
+            color: Colors.white70,
+            size: 100.0,
+          ),
+        ],
+      ),
+    );
   }
 }
